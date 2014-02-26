@@ -1,0 +1,10 @@
+<?php
+class DATABASE_CONFIG {
+
+	public $soap = array(
+		'datasource' => 'Magento.SoapSource',
+		'wsdl' => 'http://magentohost/api/soap/?wsdl',
+		'user' => 'api-user',
+		'key' => 'api-key'
+	);
+}
