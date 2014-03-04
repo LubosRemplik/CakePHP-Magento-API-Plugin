@@ -53,7 +53,7 @@ class MagentoAppModel extends AppModel {
 			}
 		}
 		$model = Inflector::underscore($this->name);
-		$results = $this->query('call', array_merge(
+		$results[$this->alias] = $this->query('call', array_merge(
 			array(
 				$this->_getSession(),
 				sprintf('%s.%s', $model, $method), 

@@ -11,16 +11,31 @@ App::uses('MagentoAppModel', 'Magento.Model');
 class CatalogProduct extends MagentoAppModel {
 
 	/**
+	 * Associated hasOne models
+	 *
+	 * @var array
+	 * @access public
+	 */
+	public $hasMany = array(
+		'CatalogProductImage' => array(
+			'className' => 'Magento.CatalogProductAttributeMedia'
+		)
+	);
+
+	/**
 	 * Cached methods
 	 *
 	 * @var array
 	 * @access public
 	 */
-	protected $_cachedMethods = array('list', 'listWithInfo');
+	protected $_cachedMethods = array(
+		'list', 
+		'listWithInfo'
+	);
 
 	/**
-	 * Gets list of products with all information
-	 * Firstly gets simple list and then do x requests to get product info
+	 * Gets list of products with all information and images
+	 * Firstly gets simple list and then do x requests to get product info & image
 	 *
 	 * @param array $args
 	 * @param int $limit
@@ -43,11 +58,14 @@ class CatalogProduct extends MagentoAppModel {
 		
 		$results = array();
 		$i = 0;
-		foreach ($data as $item) {
-			$results[] = $this->info($item['product_id']);
+		foreach ($data['CatalogProduct'] as $item) {
 			if ($i == $limit) {
 				break;
 			}
+			$results[] = array_merge(
+				$this->info($item['product_id']),
+				$this->CatalogProductImage->list($item['product_id'])
+			);
 			$i++;
 		}
 			
