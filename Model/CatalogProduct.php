@@ -1,5 +1,6 @@
 <?php
 App::uses('MagentoAppModel', 'Magento.Model');
+App::uses('Hash', 'Utility');
 /**
  * Catalog Product api wrapper
  *
@@ -29,9 +30,20 @@ class CatalogProduct extends MagentoAppModel {
 	 * @access public
 	 */
 	protected $_cachedMethods = array(
+		'info', 
 		'list', 
 		'listWithInfo'
 	);
+
+	public function list2() {
+		$data = $this->list();
+		$results = Hash::combine(
+			$data['CatalogProduct'], 
+			'{n}.product_id', '{n}.name'
+		);
+		ksort($results);
+		return $results;
+	}
 
 	/**
 	 * Gets list of products with all information and images

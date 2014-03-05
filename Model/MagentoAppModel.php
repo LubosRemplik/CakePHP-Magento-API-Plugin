@@ -53,17 +53,37 @@ class MagentoAppModel extends AppModel {
 			}
 		}
 		$model = Inflector::underscore($this->name);
-		$results[$this->alias] = $this->query('call', array_merge(
+		$request = array_merge(
 			array(
 				$this->_getSession(),
 				sprintf('%s.%s', $model, $method), 
 			),
 			$args
-		));
+		);
+		$results = $this->query('call', $request);
+		if (is_array($results)) {
+			$results[$this->alias] = $results;
+		}
 		if ($cacheKey) {
 			Cache::write($cacheKey, $results);
 		}
 		return $results;
+	}
+
+	public function create() {
+		$backtrace = debug_backtrace();
+		return $this->__call(
+			$backtrace[0]['function'],
+			$backtrace[0]['args']
+		);
+	}
+
+	public function set() {
+		$backtrace = debug_backtrace();
+		return $this->__call(
+			$backtrace[0]['function'],
+			$backtrace[0]['args']
+		);
 	}
 
 	/**
