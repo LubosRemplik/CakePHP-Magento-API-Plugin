@@ -62,7 +62,9 @@ class MagentoAppModel extends AppModel {
 		);
 		$results = $this->query('call', $request);
 		if (is_array($results)) {
-			$results[$this->alias] = $results;
+			$results = array(
+				$this->alias => $results
+			);
 		}
 		if ($cacheKey) {
 			Cache::write($cacheKey, $results);
