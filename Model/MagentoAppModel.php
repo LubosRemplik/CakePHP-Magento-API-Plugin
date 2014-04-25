@@ -61,14 +61,22 @@ class MagentoAppModel extends AppModel {
 			$args
 		);
 		$results = $this->query('call', $request);
-		if (is_array($results)) {
-			$results = array(
-				$this->alias => $results
-			);
-		}
 		if ($cacheKey) {
 			Cache::write($cacheKey, $results);
 		}
+		return $results;
+	}
+
+	/**
+	 * Creates and issue multi call to magento api
+	 */
+	public function multiCall($calls) {
+		$model = Inflector::underscore($this->name);
+		$request =array(
+			$this->_getSession(),
+			$calls
+		);
+		$results = $this->query('multiCall', $request);
 		return $results;
 	}
 

@@ -50,11 +50,10 @@ class CatalogProduct extends MagentoAppModel {
 	 * Firstly gets simple list and then do x requests to get product info & image
 	 *
 	 * @param array $args
-	 * @param int $limit
 	 * @access public
 	 * @return array with results
 	 */
-	public function listWithInfo($args = array(), $limit = 20) {
+	public function listWithInfo($args = array()) {
 		$cacheKey = $this->_generateCacheKey(1);
 		if ($cacheKey) {
 			$results = Cache::read($cacheKey);
@@ -69,18 +68,28 @@ class CatalogProduct extends MagentoAppModel {
 		}
 		
 		$results = array();
-		$i = 0;
-		foreach ($data['CatalogProduct'] as $item) {
-			if ($i == $limit) {
-				break;
-			}
-			$results[] = array_merge(
-				$this->info($item['product_id']),
-				$this->CatalogProductImage->list($item['product_id'])
-			);
-			$i++;
+
+		// get info for each product
+		$calls = array();
+		foreach ($data as $item) {
+			$calls[] = array('catalog_product.info', $item['product_id']);
 		}
-			
+		$data = $this->multiCall($calls);
+		foreach ($data as $item) {
+			$item['id'] = $item['product_id'];
+			$results[] = $item;
+		}
+
+		// get media (images) for each product
+		$calls = array();
+		foreach ($results as $item) {
+			$calls[] = array('catalog_product_attribute_media.list', $item['product_id']);
+		}
+		$mediaList = $this->multiCall($calls);
+		foreach ($mediaList as $k => $item) {
+			$results[$k]['images'] = $item;
+		}
+
 		if ($cacheKey) {
 			Cache::write($cacheKey, $results);
 		}
