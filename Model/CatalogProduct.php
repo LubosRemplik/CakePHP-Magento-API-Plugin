@@ -80,6 +80,16 @@ class CatalogProduct extends MagentoAppModel {
 			$results[] = $item;
 		}
 
+		// get linked products for each product 
+		$calls = array();
+		foreach ($data as $item) {
+			$calls[] = array('catalog_product_link.list', array('type' => 'grouped', 'product' => $item['product_id']));
+		}
+		$grouped = $this->multiCall($calls);
+		foreach ($grouped as $k => $item) {
+			$results[$k]['grouped'] = $item;
+		}
+
 		// get media (images) for each product
 		$calls = array();
 		foreach ($results as $item) {
