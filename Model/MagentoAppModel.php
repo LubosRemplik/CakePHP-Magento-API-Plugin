@@ -96,6 +96,11 @@ class MagentoAppModel extends AppModel {
 		);
 	}
 
+	public function getSession() {
+		Cache::set(array('duration' => '+1 hour'));
+		return Cache::read('Magento.session');
+	}
+
 	/**
 	 * Generate cache key unique to the model, method and params
 	 *
